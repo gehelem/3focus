@@ -1,7 +1,6 @@
-#define STEPONTIMEuS 5
-#define ENABLETIMEuS 200
+#define STEPONTIMEuS 10
+#define ENABLETIMEuS 20
 #define DEBOUNCEmS 250
-#define ENCODERINC  10
 
 #define BORIS
 
@@ -279,13 +278,17 @@ void dosteps() {
           digitalWrite(MyDirX, HIGH);
           digitalWrite(MyDirY, HIGH);
           digitalWrite(MyDirZ, HIGH);
-          for (;actualposition<targetposition;actualposition++) dostep();
+          //for (;actualposition<targetposition;actualposition++) dostep();
+          actualposition++;
+          dostep(); 
     }
     else {
           digitalWrite(MyDirX, LOW);
           digitalWrite(MyDirY, LOW);
           digitalWrite(MyDirZ, LOW);
-          for (;actualposition>targetposition;actualposition--) dostep();
+          //for (;actualposition>targetposition;actualposition--) dostep();
+          actualposition--;
+          dostep(); 
     }
 }
  
@@ -298,14 +301,16 @@ void dostep() {
       if ((btnpos==0) || (btnpos == 2)) digitalWrite(MyStepY, LOW);
       if ((btnpos==0) || (btnpos == 3)) digitalWrite(MyStepZ, LOW);
       delayMicroseconds(STEPONTIMEuS*200);  */
-      digitalWrite(MyStepX, HIGH);
-      digitalWrite(MyStepY, HIGH);
-      digitalWrite(MyStepZ, HIGH);
-      delayMicroseconds(STEPONTIMEuS);
-      digitalWrite(MyStepX, LOW);
-      digitalWrite(MyStepY, LOW);
-      digitalWrite(MyStepZ, LOW);
-      delayMicroseconds(STEPONTIMEuS*200);  
+      //for (int ii=0;ii++;ii<1) {
+        digitalWrite(MyStepX, HIGH);
+        digitalWrite(MyStepY, HIGH);
+        digitalWrite(MyStepZ, HIGH);
+        delayMicroseconds(STEPONTIMEuS);
+        digitalWrite(MyStepX, LOW);
+        digitalWrite(MyStepY, LOW);
+        digitalWrite(MyStepZ, LOW);
+        delayMicroseconds(STEPONTIMEuS);  
+      //}
 
       
   
@@ -335,11 +340,22 @@ void processCommand(String command) {
     Serial.print("#");
   }
   // --------------------------------------------------------------------------------
+  // get the new focuser position
+  if (!strcasecmp(cmd, "GN")) {
+    char tempString[6];
+    sprintf(tempString, "%04X", actualposition);
+    Serial.print(tempString);
+    Serial.print("#");
+  }  
+  // --------------------------------------------------------------------------------
   // whether half-step is enabled or not, always return "00"
   else if (!strcasecmp(cmd, "GH")) { Serial.print("00#"); }
   // --------------------------------------------------------------------------------
   // version
   else if (!strcasecmp(cmd, "GV")) { Serial.print("01#"); }    
+  // --------------------------------------------------------------------------------
+  // temperature coeff
+  else if (!strcasecmp(cmd, "GC")) { Serial.print("01#"); }    
   // --------------------------------------------------------------------------------
   // get the current temperature - moonlite compatible
   else if (!strcasecmp(cmd, "GT")) {
